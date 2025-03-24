@@ -1,0 +1,51 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: robotreleases.robotics.example.com
+spec:
+  group: robotics.example.com
+  names:
+    kind: RobotRelease
+    listKind: RobotReleaseList
+    plural: robotreleases
+    singular: robotrelease
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - version
+                - robotName
+                - manifestLocation
+              properties:
+                version:
+                  type: string
+                  description: "The commit hash or Helm chart version of this release."
+                robotName:
+                  type: string
+                  description: "The name of the Robot instance this release applies to."
+                manifestLocation:
+                  type: object
+                  required:
+                    - repoName
+                    - path
+                  properties:
+                    repoName:
+                      type: string
+                      description: "The URL of the repository containing the robot's deployment manifest or Helm chart."
+                    path:
+                      type: string
+                      description: "The path within the repository to the manifest or Helm chart."
+                  description: "Details of where the operator fetched this release's software."
+                robotUpdate:
+                  type: string
+                  description: "The name of the RobotUpdate object managing this release's deployment."
+      subresources:
+        status: {}

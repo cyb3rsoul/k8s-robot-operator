@@ -1,0 +1,58 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: robottelemetries.robotics.example.com
+spec:
+  group: robotics.example.com
+  names:
+    kind: RobotTelemetry
+    listKind: RobotTelemetryList
+    plural: robottelemetries
+    singular: robottelemetry
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - robotName
+                - status
+              properties:
+                robotName:
+                  type: string
+                  description: "The name of the Robot instance this telemetry configuration applies to."
+                status:
+                  type: string
+                  enum:
+                    - enabled
+                    - disabled
+                  description: "Whether telemetry is enabled or disabled for this robot."
+                metrics:
+                  type: array
+                  items:
+                    type: string
+                  description: "List of metrics to collect (e.g., cpu, memory, custom_metric)."
+                logs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      pod:
+                        type: string
+                        description: "Name of a specific pod to scrape logs from."
+                      label:
+                        type: string
+                        description: "Label selector to identify pods for log scraping (e.g., app=robot)."
+                    description: "Specify pods or labels to scrape logs from."
+                  description: "Configuration for log scraping."
+                sqliteRetention:
+                  type: string
+                  description: "Retention policy for SQLite data (e.g., '7d' for 7 days)."
+      subresources:
+        status: {}

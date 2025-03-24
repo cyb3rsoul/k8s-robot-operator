@@ -1,0 +1,57 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: robots.robotics.example.com
+spec:
+  group: robotics.example.com
+  names:
+    kind: Robot
+    listKind: RobotList
+    plural: robots
+    singular: robot
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - robotType
+                - manifestLocation
+                - telemetryRef  # Add this as a required field if every Robot must have telemetry
+              properties:
+                robotType:
+                  type: string
+                  enum:
+                    - real
+                    - virtual
+                  description capitale: "Specifies whether the robot is real (physical) or virtual (simulated)."
+                manifestLocation:
+                  type: object
+                  required:
+                    - repoName
+                    - path
+                  properties:
+                    repoName:
+                      type: string
+                      description: "The URL of the repository containing the robot's deployment manifest or Helm chart."
+                    path:
+                      type: string
+                      description: "The path within the repository to the manifest or Helm chart."
+                  description: "Details of where the operator should look for the robot's software."
+                telemetryRef:
+                  type: string
+                  description: "The name of the RobotTelemetry object associated with this robot."
+            status:
+              type: object
+              properties:
+                currentStatus:
+                  type: string
+                  description: "The current operational status of the robot (e.g., Running, Idle, Error)."
+      subresources:
+        status: {}
